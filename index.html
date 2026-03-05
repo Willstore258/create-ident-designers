@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buat Kartu Identitas Designers</title>
+    <!-- Font Google untuk tampilan modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Library untuk download gambar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-blue: #4fc3f7; /* Biru Langit */
+            --dark-blue: #0288d1;
+            --bg-color: #f0f8ff;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: var(--dark-blue);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        /* --- Bagian Form Input --- */
+        .input-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box; /* Agar padding tidak merusak lebar */
+        }
+
+        .btn-download {
+            background-color: var(--dark-blue);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        .btn-download:hover {
+            background-color: #0277bd;
+        }
+
+        /* --- Bagian Kartu (KTP Style) --- */
+        .card-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #card-preview {
+            width: 500px;
+            height: 315px; /* Rasio KTP */
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Kartu */
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-header .logo {
+            font-size: 24px;
+        }
+
+        /* Body Kartu */
+        .card-body {
+            display: flex;
+            flex: 1;
+            padding: 15px;
+            position: relative;
+        }
+
+        /* Foto Area */
+        .photo-area {
+            width: 130px;
+            height: 160px;
+            border: 1px solid #ccc;
+            background-color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin-right: 20px;
+        }
+
+        .photo-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Text Area */
+        .text-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .data-row {
+            display: flex;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .label {
+            width: 110px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .value {
+            font-weight: 500;
+            color: #000;
+        }
+
+        /* Footer Kartu */
+        .card-footer {
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+            padding: 5px 15px;
+            text-align: center;
+            font-size: 10px;
+            color: #777;
+        }
+
+        /* Responsive Mobile */
+        @media (max-width: 768px) {
+            #card-preview {
+                width: 100%;
+                max-width: 350px;
+                height: auto;
+                aspect-ratio: 500/315;
+            }
+            .container {
+                flex-direction: column-reverse;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>BUAT KARTU IDENTITAS DESIGNERS</h1>
+
+    <div class="container">
+        
+        <!-- Form Input -->
+        <div class="input-section">
+            <h3>Isi Data Designers</h3>
+            
+            <div class="input-group">
+                <label>Upload Foto (Kiri)</label>
+                <input type="file" id="inputPhoto" accept="image/*">
+            </div>
+
+            <div class="input-group">
+                <label>Nama Designers</label>
+                <input type="text" id="inputNama" placeholder="Contoh: Budi Santoso" oninput="updateCard()">
+            </div>
+
+            <div class="input-group">
+                <label>Gol Darah</label>
+                <input type="text" id="inputGol" placeholder="Contoh: A" oninput="updateCard()">
+            </div>
+
+            <div class="input-group">
+                <label>Hobi</label>
+                <input type="text" id="inputHobi" placeholder="Contoh: Coding, Desain" oninput="updateCard()">
+            </div>
+
+            <div class="input-group">
+                <label>Tanggal Lahir</label>
+                <input type="text" id="inputTgl" placeholder="Contoh: 17 Agustus 2000" oninput="updateCard()">
+            </div>
+
+            <div class="input-group">
+                <label>WhatsApp</label>
+                <input type="text" id="inputWA" placeholder="0812..." oninput="updateCard()">
+            </div>
+
+            <div class="input-group">
+                <label>Instagram</label>
+                <input type="text" id="inputInsta" placeholder="@username" oninput="updateCard()">
+            </div>
+
+            <div class="input-group">
+                <label>Youtube</label>
+                <input type="text" id="inputYoutube" placeholder="Channel Name" oninput="updateCard()">
+            </div>
+
+            <div class="input-group">
+                <label>Tiktok</label>
+                <input type="text" id="inputTiktok" placeholder="@username" oninput="updateCard()">
+            </div>
+
+            <button class="btn-download" onclick="downloadCard()">Download Kartu</button>
+        </div>
+
+        <!-- Preview Kartu -->
+        <div class="card-wrapper">
+            <div id="card-preview">
+                <div class="card-header">
+                    <h2>KARTU IDENTITAS DESIGNERS</h2>
+                    <div class="logo">🎨</div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="photo-area">
+                        <!-- Placeholder Image -->
+                        <img id="cardPhoto" src="https://via.placeholder.com/150?text=Foto" alt="Foto Designers">
+                    </div>
+                    
+                    <div class="text-area">
+                        <div class="data-row">
+                            <span class="label">Nama Designers</span>
+                            <span class="value" id="outNama">-</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">Gol Darah</span>
+                            <span class="value" id="outGol">-</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">Hobi</span>
+                            <span class="value" id="outHobi">-</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">Tanggal Lahir</span>
+                            <span class="value" id="outTgl">-</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">WhatsApp</span>
+                            <span class="value" id="outWA">-</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">Instagram</span>
+                            <span class="value" id="outInsta">-</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">Youtube</span>
+                            <span class="value" id="outYoutube">-</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">Tiktok</span>
+                            <span class="value" id="outTiktok">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    © @sipira dsgn 0858-0011-4299
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Fungsi Update Teks Real-time
+        function updateCard() {
+            document.getElementById('outNama').innerText = document.getElementById('inputNama').value || '-';
+            document.getElementById('outGol').innerText = document.getElementById('inputGol').value || '-';
+            document.getElementById('outHobi').innerText = document.getElementById('inputHobi').value || '-';
+            document.getElementById('outTgl').innerText = document.getElementById('inputTgl').value || '-';
+            document.getElementById('outWA').innerText = document.getElementById('inputWA').value || '-';
+            document.getElementById('outInsta').innerText = document.getElementById('inputInsta').value || '-';
+            document.getElementById('outYoutube').innerText = document.getElementById('inputYoutube').value || '-';
+            document.getElementById('outTiktok').innerText = document.getElementById('inputTiktok').value || '-';
+        }
+
+        // Fungsi Upload Foto
+        document.getElementById('inputPhoto').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('cardPhoto').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Fungsi Download Kartu
+        function downloadCard() {
+            const cardElement = document.getElementById('card-preview');
+            
+            // Menggunakan html2canvas untuk screenshot div
+            html2canvas(cardElement, { scale: 2 }).then(canvas => {
+                // Membuat link download palsu
+                const link = document.createElement('a');
+                link.download = 'Kartu-Identitas-Designers.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
